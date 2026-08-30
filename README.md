@@ -4,6 +4,12 @@
 
 Built as a GTM engineering experiment for [Eclatira](https://www.eclatira.com).
 
+**Repo:** https://github.com/Dipxk/sightline
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Dipxk/sightline)
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Dipxk/sightline&project-name=sightline&root-directory=frontend)
+
 ## The Problem
 
 Eclatira's differentiation is live vision during calls. But prospects compare them to voice-only agents (Vapi, Bland, Retell). Every sales demo requires manual research: *What are their workflows? Where does "email us a photo" break the customer experience?*
@@ -16,7 +22,21 @@ Eclatira's differentiation is live vision during calls. But prospects compare th
 4. Runs a live side-by-side call simulation (voice-only vs multimodal)
 5. Produces a shareable agent spec for sales follow-up
 
-## Quick Start
+## Deploy live (5 minutes)
+
+See **[DEPLOY.md](./DEPLOY.md)** for full instructions.
+
+1. Click **Deploy to Render** above → creates the API backend
+2. Copy your Render URL (e.g. `https://sightline-api.onrender.com`)
+3. Click **Deploy with Vercel** → set **Root Directory** to `frontend`
+4. Add env vars in Vercel:
+   - `NEXT_PUBLIC_API_URL` = your Render URL
+   - `NEXT_PUBLIC_WS_URL` = same URL with `wss://`
+5. In Render, set `CORS_ORIGINS` to your Vercel URL → redeploy
+
+**Demo:** Open your Vercel URL → click **Hotel Bonaventure**
+
+---
 
 **Terminal 1 — Backend**
 ```bash
