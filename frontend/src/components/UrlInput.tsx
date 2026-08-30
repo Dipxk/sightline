@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useState } from "react";
 import { DEMO_URLS } from "@/lib/api";
 
@@ -18,44 +17,44 @@ export function UrlInput({ onSubmit, loading }: UrlInputProps) {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <form onSubmit={handleSubmit} className="relative">
+    <div className="w-full">
+      <form onSubmit={handleSubmit} className="flex gap-2 border-b border-border pb-3">
         <input
           type="text"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          placeholder="Paste a prospect's website…"
+          placeholder="prospect-site.com"
           disabled={loading}
-          className="w-full h-14 px-5 pr-32 bg-bg-elevated border border-border rounded-2xl
-            text-text placeholder:text-muted text-[15px]
-            focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20
-            transition-all duration-200 disabled:opacity-50"
+          className="flex-1 bg-transparent text-ink placeholder:text-ink-faint
+            focus:outline-none font-mono text-[15px] disabled:opacity-40"
+          spellCheck={false}
         />
         <button
           type="submit"
           disabled={loading || !url.trim()}
-          className="absolute right-2 top-2 h-10 px-5 bg-accent hover:bg-accent-muted
-            text-white text-sm font-medium rounded-xl
-            transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="px-4 py-1.5 text-sm text-ink border border-border-strong
+            hover:bg-bg-raised transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
         >
-          {loading ? "Analyzing…" : "Analyze"}
+          {loading ? "Running…" : "Run"}
         </button>
       </form>
 
-      <div className="flex flex-wrap gap-2 mt-4 justify-center">
-        {DEMO_URLS.map((demo) => (
-          <button
-            key={demo.slug}
-            onClick={() => onSubmit(demo.url, demo.slug)}
-            disabled={loading}
-            className="px-3 py-1.5 text-xs text-text-secondary bg-bg-elevated border border-border
-              rounded-lg hover:border-accent/30 hover:text-text transition-all duration-200
-              disabled:opacity-40"
-          >
-            {demo.label}
-          </button>
+      <p className="mt-3 text-sm text-ink-faint">
+        Examples:{" "}
+        {DEMO_URLS.map((demo, i) => (
+          <span key={demo.slug}>
+            {i > 0 && " · "}
+            <button
+              type="button"
+              onClick={() => onSubmit(demo.url, demo.slug)}
+              disabled={loading}
+              className="font-mono text-ink-soft hover:text-ink underline-offset-2 hover:underline disabled:opacity-40"
+            >
+              {demo.url}
+            </button>
+          </span>
         ))}
-      </div>
+      </p>
     </div>
   );
 }

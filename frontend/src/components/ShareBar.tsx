@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState } from "react";
 
 interface ShareBarProps {
   shareId: string;
@@ -8,6 +8,7 @@ interface ShareBarProps {
 }
 
 export function ShareBar({ shareId, onReset }: ShareBarProps) {
+  const [copied, setCopied] = useState(false);
   const shareUrl =
     typeof window !== "undefined"
       ? `${window.location.origin}/share/${shareId}`
@@ -15,33 +16,29 @@ export function ShareBar({ shareId, onReset }: ShareBarProps) {
 
   const copyLink = () => {
     navigator.clipboard.writeText(shareUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="glass rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-4"
-    >
-      <div className="flex-1 min-w-0">
-        <p className="text-xs text-muted mb-1">Shareable artifact</p>
-        <p className="text-sm text-text-secondary font-mono truncate">{shareUrl}</p>
-      </div>
-      <div className="flex gap-2 shrink-0">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2 border-t border-border">
+      <p className="flex-1 font-mono text-xs text-ink-soft truncate">{shareUrl}</p>
+      <div className="flex gap-3 shrink-0">
         <button
+          type="button"
           onClick={copyLink}
-          className="px-4 py-2 text-sm font-medium bg-accent/10 text-accent border border-accent/20
-            rounded-xl hover:bg-accent/20 transition-colors"
+          className="text-sm text-ink border border-border-strong px-3 py-1.5 hover:bg-bg-raised transition-colors"
         >
-          Copy link
+          {copied ? "Copied" : "Copy link"}
         </button>
         <button
+          type="button"
           onClick={onReset}
-          className="px-4 py-2 text-sm text-text-secondary hover:text-text transition-colors"
+          className="text-sm text-ink-faint hover:text-ink-soft transition-colors py-1.5"
         >
-          New analysis
+          New run
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 }

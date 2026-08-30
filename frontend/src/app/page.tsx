@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { useAnalysis } from "@/hooks/useAnalysis";
 import { UrlInput } from "@/components/UrlInput";
 import { ProgressFeed } from "@/components/ProgressFeed";
@@ -17,84 +16,63 @@ export default function Home() {
 
   const loading = state.status === "analyzing" || state.status === "simulating";
   const activeMoment = selectedMoment || state.activeMomentId;
+  const hasResults = state.status !== "idle";
 
   return (
     <main className="min-h-screen">
-      {/* Hero */}
-      <section className={`relative px-6 transition-all duration-500 ${state.status === "idle" ? "pt-20 pb-12" : "pt-8 pb-6"}`}>
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-accent/5 rounded-full blur-3xl" />
-        </div>
-
-        <div className="relative max-w-3xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <p className="text-xs font-medium text-accent uppercase tracking-widest mb-4">
-              GTM Intelligence
-            </p>
-            <h1 className={`font-bold text-text tracking-tight leading-[1.1] transition-all duration-500 ${state.status === "idle" ? "text-4xl sm:text-5xl" : "text-2xl"}`}>
-              Sightline
-            </h1>
-            {state.status === "idle" && (
-              <p className="mt-4 text-lg text-text-secondary max-w-xl mx-auto leading-relaxed">
-                Paste a prospect&apos;s website. See where voice-only agents fail —
-                and what a multimodal agent would do instead.
-              </p>
-            )}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.15 }}
-            className={state.status === "idle" ? "mt-10" : "mt-4"}
-          >
-            <UrlInput onSubmit={analyze} loading={loading} />
-          </motion.div>
-
-          {error && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mt-4 text-sm text-danger"
-            >
-              {error}
-            </motion.p>
+      <header className="border-b border-border px-6 py-4">
+        <div className="max-w-5xl mx-auto flex items-baseline justify-between">
+          <span className="font-mono text-sm text-ink tracking-tight">sightline</span>
+          {hasResults && state.profile && (
+            <span className="text-xs font-mono text-ink-faint truncate max-w-[50%]">
+              {state.profile.name}
+            </span>
           )}
         </div>
-      </section>
+      </header>
 
-      {/* Analysis flow */}
-      <AnimatePresence>
-        {state.status !== "idle" && (
-          <motion.section
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="px-6 pb-20"
-          >
-            <div className="max-w-6xl mx-auto space-y-8">
-              {/* Progress */}
-              {state.status === "analyzing" && state.progress.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="max-w-md mx-auto"
-                >
-                  <ProgressFeed messages={state.progress} />
-                </motion.div>
-              )}
+      <div className="max-w-5xl mx-auto px-6 py-10">
+        {!hasResults ? (
+          <div className="max-w-xl">
+            <h1 className="text-2xl font-medium text-ink tracking-tight leading-snug">
+              Where do voice agents fail for this business?
+            </h1>
+            <p className="mt-3 text-ink-soft leading-relaxed">
+              Paste a prospect site. Sightline maps call workflows that need live
+              vision — then replays the same moment with and without it.
+            </p>
+            <div className="mt-8">
+              <UrlInput onSubmit={analyze} loading={loading} />
+            </div>
+            {error && (
+              <p className="mt-4 text-sm text-fail">{error}</p>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-8">
+            <UrlInput onSubmit={analyze} loading={loading} />
 
-              {/* Profile */}
-              {state.profile && (
-                <ProfileCard profile={{ ...state.profile, vision_moments: state.moments, integrations: state.integrations }} />
-              )}
+            {error && <p className="text-sm text-fail">{error}</p>}
 
-              {/* Moments + Simulation */}
-              {state.moments.length > 0 && (
+            {state.status === "analyzing" && state.progress.length > 0 && (
+              <ProgressFeed messages={state.progress} />
+            )}
+
+            {state.profile && (
+              <ProfileCard
+                profile={{
+                  ...state.profile,
+                  vision_moments: state.moments,
+                  integrations: state.integrations,
+                }}
+              />
+            )}
+
+            {state.moments.length > 0 && (
+              <div>
+                <p className="text-xs font-mono text-ink-faint uppercase tracking-wide mb-4">
+                  Call replay
+                </p>
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                   <div className="lg:col-span-4">
                     <MomentList
@@ -103,48 +81,36 @@ export default function Home() {
                       onSelect={setSelectedMoment}
                     />
                   </div>
-
-                  <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-3">
                     <SimulationPane
-                      title="Voice-only agent"
-                      subtitle="Blind — no vision capability"
+                      title="Voice only"
+                      subtitle="no camera"
                       variant="voice_only"
                       ticks={state.voiceTicks}
                       momentId={activeMoment}
                     />
                     <SimulationPane
-                      title="Multimodal agent"
-                      subtitle="Voice + vision + action"
+                      title="Voice + vision"
+                      subtitle="same call"
                       variant="multimodal"
                       ticks={state.multiTicks}
                       momentId={activeMoment}
                     />
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* Integrations */}
-              {state.integrations.length > 0 && (
-                <IntegrationMap integrations={state.integrations} />
-              )}
+            {state.integrations.length > 0 && (
+              <IntegrationMap integrations={state.integrations} />
+            )}
 
-              {/* Share */}
-              {state.status === "complete" && state.shareId && (
-                <ShareBar shareId={state.shareId} onReset={reset} />
-              )}
-            </div>
-          </motion.section>
+            {state.status === "complete" && state.shareId && (
+              <ShareBar shareId={state.shareId} onReset={reset} />
+            )}
+          </div>
         )}
-      </AnimatePresence>
-
-      {/* Footer */}
-      {state.status === "idle" && (
-        <footer className="absolute bottom-8 left-0 right-0 text-center">
-          <p className="text-xs text-muted">
-            Built for Eclatira · Simulated agent behavior · Not affiliated
-          </p>
-        </footer>
-      )}
+      </div>
     </main>
   );
 }

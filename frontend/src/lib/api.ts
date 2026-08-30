@@ -77,8 +77,8 @@ export const DEMO_URLS = [
     slug: "hotel-bonaventure",
   },
   {
-    label: "Clinique Médicale",
-    url: "example-clinic.ca",
+    label: "Clinique Plateau",
+    url: "cliniqueplateau.ca",
     slug: "clinic-demo",
   },
 ];

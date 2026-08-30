@@ -24,16 +24,16 @@ export default function SharePage() {
           setActiveMoment(data.profile.vision_moments[0].id);
         }
       })
-      .catch(() => setError("Artifact not found"));
+      .catch(() => setError("Not found"));
   }, [shareId]);
 
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
         <div className="text-center">
-          <p className="text-danger mb-4">{error}</p>
-          <Link href="/" className="text-accent text-sm hover:underline">
-            ← Back to Sightline
+          <p className="text-ink-faint mb-4 font-mono text-sm">{error}</p>
+          <Link href="/" className="text-sm text-ink-soft hover:text-ink">
+            ← sightline
           </Link>
         </div>
       </div>
@@ -43,21 +43,23 @@ export default function SharePage() {
   if (!profile) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+        <span className="font-mono text-xs text-ink-faint">loading</span>
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen px-6 py-12">
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="text-sm text-muted hover:text-text transition-colors">
-            ← Sightline
+    <main className="min-h-screen">
+      <header className="border-b border-border px-6 py-4">
+        <div className="max-w-5xl mx-auto flex items-baseline justify-between">
+          <Link href="/" className="font-mono text-sm text-ink hover:text-ink-soft">
+            sightline
           </Link>
-          <span className="text-xs text-muted font-mono">share/{shareId}</span>
+          <span className="text-xs font-mono text-ink-faint">{shareId}</span>
         </div>
+      </header>
 
+      <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
         <ProfileCard profile={profile} />
 
         <MomentList
@@ -67,21 +69,6 @@ export default function SharePage() {
         />
 
         <IntegrationMap integrations={profile.integrations} />
-
-        <div className="glass rounded-2xl p-6 text-center">
-          <p className="text-sm text-text-secondary">
-            This artifact identifies where{" "}
-            <span className="text-text font-medium">{profile.name}</span> needs
-            live vision during customer calls — and which integrations an agent
-            would require.
-          </p>
-          <Link
-            href="/"
-            className="inline-block mt-4 px-5 py-2.5 bg-accent text-white text-sm font-medium rounded-xl hover:bg-accent-muted transition-colors"
-          >
-            Analyze another prospect
-          </Link>
-        </div>
       </div>
     </main>
   );

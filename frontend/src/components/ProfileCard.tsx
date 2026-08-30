@@ -1,14 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
 import type { BusinessProfile } from "@/lib/types";
 
-const VERTICAL_LABELS: Record<string, string> = {
-  hotel: "Hotel & F&B",
-  clinic: "Clinic & Healthcare",
-  retail: "Retail & Support",
-  property: "Property Management",
-  other: "Customer Operations",
+const VERTICAL: Record<string, string> = {
+  hotel: "Hospitality",
+  clinic: "Healthcare",
+  retail: "Retail",
+  property: "Property",
+  other: "Operations",
 };
 
 interface ProfileCardProps {
@@ -16,89 +15,38 @@ interface ProfileCardProps {
 }
 
 export function ProfileCard({ profile }: ProfileCardProps) {
+  const visionCount = profile.vision_moments.length;
+  const needsVision = profile.vision_moments.filter((m) => m.vision_trigger).length;
+
+  const signals: string[] = [];
+  if (profile.location) signals.push(profile.location);
+  signals.push(VERTICAL[profile.vertical] || profile.vertical);
+  if (profile.after_hours_gap) signals.push("after-hours phone gap");
+  if (profile.bilingual) signals.push("bilingual ops");
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="glass rounded-2xl p-6 glow-accent"
-    >
-      <div className="flex items-start justify-between gap-4">
+    <div className="panel px-5 py-4">
+      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
         <div>
-          <h2 className="text-xl font-semibold text-text">{profile.name}</h2>
+          <h2 className="text-lg font-medium text-ink tracking-tight">
+            {profile.name}
+          </h2>
           {profile.tagline && (
-            <p className="text-sm text-text-secondary mt-1">{profile.tagline}</p>
+            <p className="text-sm text-ink-soft mt-0.5 max-w-xl">{profile.tagline}</p>
           )}
         </div>
-        <span className="shrink-0 px-3 py-1 text-xs font-medium bg-accent/10 text-accent rounded-full border border-accent/20">
-          {VERTICAL_LABELS[profile.vertical] || profile.vertical}
-        </span>
+        <p className="text-sm font-mono text-ink-faint shrink-0">
+          {signals.join(" · ")}
+        </p>
       </div>
 
-      <div className="flex flex-wrap gap-2 mt-4">
-        {profile.location && (
-          <Tag icon="📍">{profile.location}</Tag>
-        )}
-        {profile.bilingual && <Tag icon="🌐">Bilingual</Tag>}
+      <p className="mt-4 text-sm text-ink-soft border-t border-border pt-4">
+        <span className="text-ink font-medium">{needsVision} of {visionCount}</span>{" "}
+        mapped workflows require live vision.
         {profile.after_hours_gap && (
-          <Tag icon="🌙">After-hours gap</Tag>
+          <> Phone coverage appears thinner than digital — callers likely hit voicemail after hours.</>
         )}
-        {profile.hours_summary && (
-          <Tag icon="🕐">{profile.hours_summary}</Tag>
-        )}
-      </div>
-
-      <div className="grid grid-cols-2 gap-4 mt-6">
-        <ScoreBar
-          label="Voice-only coverage"
-          score={profile.voice_only_score}
-          color="danger"
-        />
-        <ScoreBar
-          label="Multimodal coverage"
-          score={profile.multimodal_score}
-          color="success"
-        />
-      </div>
-    </motion.div>
-  );
-}
-
-function Tag({ icon, children }: { icon: string; children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs text-text-secondary bg-bg-elevated rounded-lg border border-border-subtle">
-      <span>{icon}</span>
-      {children}
-    </span>
-  );
-}
-
-function ScoreBar({
-  label,
-  score,
-  color,
-}: {
-  label: string;
-  score: number;
-  color: "danger" | "success";
-}) {
-  const barColor = color === "danger" ? "bg-danger" : "bg-success";
-  const textColor = color === "danger" ? "text-danger" : "text-success";
-
-  return (
-    <div>
-      <div className="flex justify-between items-baseline mb-2">
-        <span className="text-xs text-text-secondary">{label}</span>
-        <span className={`text-lg font-semibold ${textColor}`}>{score}%</span>
-      </div>
-      <div className="h-1.5 bg-bg-elevated rounded-full overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${score}%` }}
-          transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-          className={`h-full rounded-full ${barColor}`}
-        />
-      </div>
+      </p>
     </div>
   );
 }
